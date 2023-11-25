@@ -8,7 +8,6 @@ from typing import Annotated
 from uuid import uuid4
 
 import typer
-from icecream import ic
 
 from .database_utilities import get_db_location
 
@@ -17,6 +16,11 @@ app = typer.Typer()
 
 
 def fuel_types():
+    """
+    Returns a list of fuel types fetched from the database as an Enum class.
+    Returns: Enum
+
+    """
     with sqlite3.connect(get_db_location()) as conn:
         cursor = conn.cursor()
         query = "SELECT name FROM fuel_types"
@@ -29,7 +33,8 @@ def fuel_types():
 
 def service_types():
     """
-    Returns a list of service types fetched from the database as a Enum class.
+    Returns a list of service types fetched from the database as an Enum class.
+    Returns: Enum
     """
 
     with sqlite3.connect(get_db_location()) as conn:
