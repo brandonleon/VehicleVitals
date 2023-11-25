@@ -153,7 +153,7 @@ def fuel_up(
 def service(
     vehicle_id: Annotated[str, typer.Option(help="Vehicle ID")],
     odometer: Annotated[float, typer.Option(help="Odometer reading")],
-    service_type: Annotated[ic(service_types()), typer.Option(help="Type of service")],
+    service_type: Annotated[service_types(), typer.Option(help="Type of service")],
     cost: Annotated[float, typer.Option(help="Cost of service ($0.00)")],
     entry_date: Annotated[
         str, typer.Option(help="Date of service")
