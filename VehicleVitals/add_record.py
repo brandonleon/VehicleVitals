@@ -16,25 +16,15 @@ from .database_utilities import get_db_location
 app = typer.Typer()
 
 
-# TODO: Fetch fuel types from a new table in the database. Will need a new add_fuel_type command.
-class FuelTypes(str, Enum):
-    """
-    Enum class representing different types of fuel.
+def fuel_types():
+    with sqlite3.connect(get_db_location()) as conn:
+        cursor = conn.cursor()
+        query = "SELECT name FROM fuel_types"
+        cursor.execute(query)
+        enum_values = [row[0] for row in cursor.fetchall()]
 
-    Explanation:
-    This enum class defines various types of fuel that can be used in a vehicle.
-
-    Attributes:
-    - regular: Represents regular gasoline.
-    - mid_grade: Represents mid-grade gasoline.
-    - premium: Represents premium gasoline.
-    - diesel: Represents diesel fuel.
-    """
-
-    regular = "Regular"
-    mid_grade = "Mid-Grade"
-    premium = "Premium"
-    diesel = "Diesel"
+    # Creating an Enum class with both name and value
+    return Enum("FuelTypes", list(zip(enum_values, enum_values)))
 
 
 def service_types():
@@ -57,12 +47,9 @@ def fuel_up(
     odometer: Annotated[float, typer.Option(help="Odometer reading")],
     gallons: Annotated[float, typer.Option(help="Gallons filled")],
     cost_per_gallon: Annotated[float, typer.Option(help="Cost per gallon")],
+    fuel_type: Annotated[fuel_types(), typer.Option(help="Type of fuel")],
     filled_up: Annotated[bool, typer.Option(help="Filled up the tank")] = True,
     missed_last_fill_up: Annotated[bool, typer.Option(help="Missed fill up")] = False,
-    # Todo: Make default fuel type user configurable.
-    fuel_type: Annotated[
-        FuelTypes, typer.Option(help="Type of fuel")
-    ] = FuelTypes.premium.value,
     entry_date: Annotated[
         str, typer.Option(help="Date of service")
     ] = datetime.now().strftime("%Y-%m-%d"),

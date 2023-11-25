@@ -77,3 +77,11 @@ CREATE TABLE IF NOT EXISTS "service_type_parts" (
     FOREIGN KEY ("part_id") REFERENCES "parts" ("id")
 );
 
+-- Fuel types table
+CREATE TABLE IF NOT EXISTS "fuel_types" (
+    "id"            TEXT NOT NULL,
+    "name"          TEXT NOT NULL ,
+    "octane_level"  INTEGER,
+    "cetane_level"  INTEGER,
+    PRIMARY KEY("id")
+);
