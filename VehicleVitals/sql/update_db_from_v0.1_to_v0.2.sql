@@ -2,14 +2,6 @@
 ALTER TABLE logs
 ADD COLUMN service_type_id TEXT;
 
--- Update the service_type_id in the logs table based on the service names
-UPDATE logs
-SET service_type_id = (
-    SELECT id
-    FROM service_types
-    WHERE name = logs.services
-);
-
 -- parts table
 CREATE TABLE IF NOT EXISTS "parts" (
     "id"            TEXT NOT NULL,
@@ -44,4 +36,12 @@ VALUES
     ('03EB0F23-65B6-446D-8AED-7BBE42367362', 'Engine Oil', 'Engine oil change', 30, 3000),
     ('1C53EFD2-EE43-4E93-AC48-B5A2BF37C909', 'Fuel Filter', 'Replace fuel filter', 90, 9000),
     ('E0322B94-F60F-4610-AD44-66CEA8578A9D', 'Air Filter', 'Replace air filter', 60, 6000),
-    ('0768AC11-11CB-46C2-8008-6CEE22AF0330', 'Cabin Air Filter', 'Replace cabin air filter', 180, 18000),
+    ('0768AC11-11CB-46C2-8008-6CEE22AF0330', 'Cabin Air Filter', 'Replace cabin air filter', 180, 18000);
+
+-- Update the service_type_id in the logs table based on the service names
+UPDATE logs
+SET service_type_id = (
+    SELECT id
+    FROM service_types
+    WHERE name = logs.services
+);
