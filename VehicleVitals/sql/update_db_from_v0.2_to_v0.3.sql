@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS "fuel_types" (
     PRIMARY KEY("id")
 );
 
--- Default fuel types
+-- Initial fuel types
 INSERT INTO fuel_types (id, name, octane_level, cetane_level) VALUES
     ('B9886053-B7E4-4A01-A980-37946417A899', 'Gasoline (87 Octane)', 87, NULL),
     ('6B0AAF0C-FD66-4454-816D-DE08955E77F8', 'Diesel', NULL, 40),

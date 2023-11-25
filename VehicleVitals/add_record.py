@@ -84,17 +84,23 @@ def fuel_up(
         case (False, False):
             is_fill_up = "Partial"
 
-    match fuel_type:
-        case FuelTypes.regular:
-            fuel_type = f"{fuel_type.value} [Octane: 87]"
-        case FuelTypes.mid_grade:
-            fuel_type = f"{fuel_type.value} [Octane: 89]"
-        case FuelTypes.premium:
-            fuel_type = f"{fuel_type.value} [Octane: 91]"
-        case FuelTypes.diesel:
-            fuel_type = f"{fuel_type.value} [Centane: 40]"
-        case _:
-            raise ValueError(f"Invalid fuel type: {fuel_type}")
+    # get the fuel type details from the database
+    fuel_type = fuel_type.value
+    with sqlite3.connect(get_db_location()) as conn:
+        cursor = conn.cursor()
+        query = "SELECT * FROM fuel_types WHERE name = ?"
+        cursor.execute(query, (fuel_type,))
+        fuel_type_details = cursor.fetchone()
+
+    octane_level = fuel_type_details[2] if fuel_type_details[2] is not None else None
+    cetane_level = fuel_type_details[3] if fuel_type_details[3] is not None else None
+
+    if octane_level is not None:
+        octane_or_cetane = f"Octane: {octane_level}"
+    elif cetane_level is not None:
+        octane_or_cetane = f"Cetane: {cetane_level}"
+    else:
+        octane_or_cetane = "Unknown"
 
     with sqlite3.connect(get_db_location()) as conn:
         if is_fill_up == "Full":
@@ -139,7 +145,7 @@ def fuel_up(
                 f"${cost_per_gallon:.3f}",
                 gallons,
                 f"${cost_per_gallon * gallons:.2f}",
-                fuel_type,
+                f"{fuel_type} [{octane_or_cetane}]",  # Fuel type [Octane / Cetane
             ),
         ),
 
@@ -205,7 +211,7 @@ def vehicle(
     make: Annotated[str, typer.Option(help="Make of vehicle")],
     model: Annotated[str, typer.Option(help="Model of vehicle")],
     color: Annotated[str, typer.Option(help="Color of vehicle")],
-    milage: Annotated[float, typer.Option(help="Odometer reading")],
+    mileage: Annotated[float, typer.Option(help="Odometer reading")],
     name: Annotated[str, typer.Option(help="Short name of vehicle")] = None,
     trim: Annotated[str, typer.Option(help="Trim level vehicle")] = None,
     engine: Annotated[str, typer.Option(help="Engine of vehicle")] = None,
@@ -234,7 +240,7 @@ def vehicle(
                 year,
                 make,
                 model,
-                milage,
+                mileage,
                 trim,
                 engine,
                 color,
