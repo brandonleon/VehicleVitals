@@ -6,8 +6,7 @@ CREATE TABLE IF NOT EXISTS "version" (
 
 -- configurations table
 CREATE TABLE IF NOT EXISTS "configurations" (
-    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
-    "key" TEXT NOT NULL,
+    "key" TEXT NOT NULL PRIMARY KEY,
     "value" TEXT,
     UNIQUE ("key")
 );

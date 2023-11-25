@@ -41,9 +41,10 @@ def logs(
         # Prepare the SQL query with parameterized query
         query = """
             SELECT v.Year, v.Make, v.Model, v.trim, l.EntryDate, l.EntryTime,
-            l.OdometerReading, l.MPG, l.EntryType, l.Services
+            l.OdometerReading, l.MPG, l.EntryType, st.name as Service
             FROM logs l
             LEFT JOIN vehicles v ON l.VehicleID = v.id
+            LEFT JOIN service_types st on l.service_type_id = st.id
         """
 
         params = ()
@@ -65,15 +66,19 @@ def logs(
                 "Odometer",
                 "MPG",
                 "EntryType",
-                "Services",
+                "Service",
             )
             for log in log_entries:
                 table.add_row(
                     f"{log[0]} {log[1]} {log[2]} {log[3]}",
                     log[4],
                     log[5],
-                    f"{float(log[6]):,.1f}" if log[6] is not None else "N/A",
-                    f"{float(log[7]):,.1f}" if log[7] is not None else "N/A",
+                    f"{float(log[6]):,.1f}"
+                    if log[6] is not None
+                    else "[cyan]---[/cyan]",
+                    f"{float(log[7]):,.1f}"
+                    if log[7] is not None
+                    else "[cyan]---[/cyan]",
                     log[8],
                     log[9],
                 )

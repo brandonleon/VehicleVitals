@@ -33,7 +33,6 @@ VALUES
     ('1C53EFD2-EE43-4E93-AC48-B5A2BF37C909', 'Fuel Filter', 'Replace fuel filter', 90, 9000),
     ('E0322B94-F60F-4610-AD44-66CEA8578A9D', 'Air Filter', 'Replace air filter', 60, 6000),
     ('0768AC11-11CB-46C2-8008-6CEE22AF0330', 'Cabin Air Filter', 'Replace cabin air filter', 180, 18000),
-    ('35F07643-0B2B-45B9-AD49-F4D289CDDBBD', 'Gas', 'Gas system check', 365, 36500);
 
 -- Add a new column to the logs table
 ALTER TABLE logs

@@ -8,6 +8,7 @@ from typing import Annotated
 from uuid import uuid4
 
 import typer
+from icecream import ic
 
 from .database_utilities import get_db_location
 
@@ -15,32 +16,7 @@ from .database_utilities import get_db_location
 app = typer.Typer()
 
 
-class ServiceTypes(str, Enum):
-    """
-    Enum class representing different types of services.
-
-    Explanation:
-    This enum class defines various types of services that can be performed on a vehicle.
-
-    Attributes:
-    - air_filter: Represents an air filter service.
-    - cabin_filter: Represents a cabin filter service.
-    - oil_change: Represents an oil change service.
-    - tire_rotation: Represents a tire rotation service.
-    - tire_replacement: Represents a tire replacement service.
-    - car_wash: Represents a car wash service.
-    - car_detailing: Represents a car detailing service.
-    """
-
-    air_filter = "Air Filter"
-    cabin_filter = "Cabin Filter"
-    oil_change = "Oil Change"
-    tire_rotation = "Tire Rotation"
-    tire_replacement = "Tire Replacement"
-    car_wash = "Car Wash"
-    car_detailing = "Car Detailing"
-
-
+# TODO: Fetch fuel types from a new table in the database. Will need a new add_fuel_type command.
 class FuelTypes(str, Enum):
     """
     Enum class representing different types of fuel.
@@ -59,6 +35,20 @@ class FuelTypes(str, Enum):
     mid_grade = "Mid-Grade"
     premium = "Premium"
     diesel = "Diesel"
+
+
+def service_types():
+    """
+    Returns a list of service types fetched from the database as a Enum class.
+    """
+
+    with sqlite3.connect(get_db_location()) as conn:
+        cursor = conn.cursor()
+        query = "SELECT name FROM service_types"
+        cursor.execute(query)
+        enum_values = [str(row[0]) for row in cursor.fetchall()]
+
+    return Enum("ServiceTypes", list(zip(enum_values, enum_values)))
 
 
 @app.command()
@@ -171,7 +161,7 @@ def fuel_up(
 def service(
     vehicle_id: Annotated[str, typer.Option(help="Vehicle ID")],
     odometer: Annotated[float, typer.Option(help="Odometer reading")],
-    service_type: Annotated[ServiceTypes, typer.Option(help="Type of service")],
+    service_type: Annotated[ic(service_types()), typer.Option(help="Type of service")],
     cost: Annotated[float, typer.Option(help="Cost of service ($0.00)")],
     entry_date: Annotated[
         str, typer.Option(help="Date of service")
