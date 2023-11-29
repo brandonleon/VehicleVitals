@@ -7,8 +7,6 @@ from uuid import uuid4
 
 import rich
 import typer
-from rich.console import Console
-from rich.table import Table
 
 from VehicleVitals.database_utilities import get_db_location
 
@@ -62,7 +60,61 @@ def fuel_type(
 
         params += [fuel, fuel]
 
-        cursor.execute(query, params)
-        conn.commit()
+        try:
+            cursor.execute(query, params)
+            conn.commit()
+        except sqlite3.IntegrityError as e:
+            raise typer.BadParameter(f"Fuel type {fuel} does not exist.") from e
 
     typer.echo(f"Updated fuel type {fuel} in the database.")
+
+
+@app.command()
+def fuel_type(
+    name: Annotated[str, typer.Option(help="Name of the fuel type")],
+    octane: Annotated[int, typer.Option(help="Octane level of the fuel type")] = None,
+    cetane: Annotated[int, typer.Option(help="Cetane level of the fuel type")] = None,
+):
+    """
+    Add a new fuel type to the database.
+    """
+
+    # Validate one of either octane_level or cetane_level provided
+    if octane is None and cetane is None:
+        raise typer.BadParameter(
+            "Either octane_level or cetane_level must be provided."
+        )
+
+    with sqlite3.connect(get_db_location()) as conn:
+        cursor = conn.cursor()
+        query = f"INSERT INTO fuel_types (id, name, octane_level, cetane_level) VALUES ('{str(uuid4())}', ?, ?, ?)"
+        params = [name, octane, cetane]
+        try:
+            cursor.execute(query, params)
+            conn.commit()
+        except sqlite3.IntegrityError as e:
+            raise typer.BadParameter(f"Fuel type {name} already exists.") from e
+
+    typer.echo(f"Added fuel type {name} to the database.")
+
+
+@app.command()
+def part(
+    name: Annotated[str, typer.Option(help="Name of the part")],
+    cost: Annotated[float, typer.Option(help="Cost of the part")],
+    description: Annotated[str, typer.Option(help="Description of the part")] = None,
+):
+    """
+    Create a new part in the database.
+    """
+    with sqlite3.connect(get_db_location()) as conn:
+        cursor = conn.cursor()
+        query = f"INSERT INTO parts (id, name, description, cost) VALUES ('{str(uuid4())}', ?, ?, ?)"
+        params = [name, description, cost]
+        try:
+            cursor.execute(query, params)
+            conn.commit()
+        except sqlite3.IntegrityError as e:
+            raise typer.BadParameter(f"Part {name} already exists.") from e
+
+    typer.echo(f"Added part {name} to the database.")
