@@ -12,4 +12,6 @@ from .config_commands import read
 # Create the Typer app
 app = typer.Typer()
 
-app.add_typer(read.app, name="read", help="Display fuel types.")
+app.add_typer(
+    read.app, name="read", help="Read configuration values from the database."
+)
