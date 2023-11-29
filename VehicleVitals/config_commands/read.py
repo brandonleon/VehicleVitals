@@ -99,3 +99,43 @@ def service_types(
                 )
 
         console.print(table)
+
+
+@app.command()
+def parts(
+    show_id: Annotated[bool, typer.Option(help="Show the ID of the part")] = False,
+):
+    """
+    Returns a list of parts fetched from the database.
+    """
+    with sqlite3.connect(get_db_location()) as conn:
+        conn.row_factory = sqlite3.Row
+        console = Console()
+        cursor = conn.cursor()
+        if show_id:
+            query = "SELECT id, name, description, cost FROM parts"
+        else:
+            query = "SELECT name, description, cost FROM parts"
+        cursor.execute(query)
+        items = cursor.fetchall()
+
+        if show_id:
+            table = Table("ID", "Name", "Description", "Cost")
+        else:
+            table = Table("Name", "Description", "Cost")
+
+        for part in items:
+            if show_id:
+                table.add_row(
+                    f"{part['id']}",
+                    f"{part['name']}",
+                    f"{part['description']}",
+                    f"{part['cost']}",
+                )
+            else:
+                table.add_row(
+                    f"{part['name']}",
+                    f"{part['description']}",
+                    f"{part['cost']}",
+                )
+        console.print(table)
