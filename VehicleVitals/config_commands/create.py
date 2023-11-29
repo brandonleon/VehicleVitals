@@ -34,8 +34,11 @@ def fuel_type(
         cursor = conn.cursor()
         query = f"INSERT INTO fuel_types (id, name, octane_level, cetane_level) VALUES ('{str(uuid4())}', ?, ?, ?)"
         params = [name, octane, cetane]
-        cursor.execute(query, params)
-        conn.commit()
+        try:
+            cursor.execute(query, params)
+            conn.commit()
+        except sqlite3.IntegrityError as e:
+            raise typer.BadParameter(f"Fuel type {name} already exists.") from e
 
     typer.echo(f"Added fuel type {name} to the database.")
 
@@ -63,8 +66,11 @@ def service_type(
             f"VALUES ('{str(uuid4())}', ?, ?, ?, ?)"
         )
         params = [name, description, interval_days, interval_miles]
-        cursor.execute(query, params)
-        conn.commit()
+        try:
+            cursor.execute(query, params)
+            conn.commit()
+        except sqlite3.IntegrityError as e:
+            raise typer.BadParameter(f"Service type {name} already exists.") from e
 
     typer.echo(f"Added service type {name} to the database.")
 
@@ -85,7 +91,10 @@ def part(
             f"VALUES ('{str(uuid4())}', ?, ?, ?)"
         )
         params = [name, description, cost]
-        cursor.execute(query, params)
-        conn.commit()
+        try:
+            cursor.execute(query, params)
+            conn.commit()
+        except sqlite3.IntegrityError as e:
+            raise typer.BadParameter(f"Part {name} already exists.") from e
 
     typer.echo(f"Added part {name} to the database.")

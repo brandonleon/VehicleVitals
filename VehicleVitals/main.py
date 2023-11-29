@@ -5,9 +5,9 @@ defines the commands that can be run from the command line.
 import typer
 
 from . import add_record
+from . import config
 from . import display
 from . import edit
-from . import config
 from .database_utilities import initialize_database
 
 initialize_database()  # Initialize the database (Create tables if they don't exist)

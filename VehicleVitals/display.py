@@ -138,29 +138,5 @@ def vehicles(
             typer.echo("No vehicles found on this page.")
 
 
-@app.command()
-def fuel_types():
-    """
-    View the fuel types in the database.
-    """
-    with sqlite3.connect(get_db_location()) as conn:
-        cursor = conn.cursor()
-
-        cursor.execute("SELECT name, octane_level, cetane_level FROM fuel_types")
-        if fuel_types := cursor.fetchall():
-            typer.echo("Fuel Types:")
-            console = Console()
-            table = Table("Fuel Type", "Octane/Cetane")
-            for fuel_type in fuel_types:
-                table.add_row(
-                    f"{fuel_type[0]}",
-                    f"{fuel_type[1] if fuel_type[1] is not None else ''}"
-                    f"{fuel_type[2] if fuel_type[2] is not None else ''}",
-                )
-            console.print(table)
-        else:
-            typer.echo("No fuel types found.")
-
-
 if __name__ == "__main__":
     app()

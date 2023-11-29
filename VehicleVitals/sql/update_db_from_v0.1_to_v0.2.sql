@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS "service_type_parts" (
 );
 
 -- Create service types for distinct services
-INSERT INTO service_types (id, name, description, interval_days, interval_miles)
+INSERT OR IGNORE INTO service_types (id, name, description, interval_days, interval_miles)
 VALUES
     ('03EB0F23-65B6-446D-8AED-7BBE42367362', 'Engine Oil', 'Engine oil change', 30, 3000),
     ('1C53EFD2-EE43-4E93-AC48-B5A2BF37C909', 'Fuel Filter', 'Replace fuel filter', 90, 9000),

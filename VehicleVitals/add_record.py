@@ -250,38 +250,5 @@ def vehicle(
         typer.echo(f"Added vehicle {year} {make} {model}, to the database.")
 
 
-@app.command()
-def fuel(
-    name: Annotated[str, typer.Option(help="Name of fuel type")],
-    octane: Annotated[int, typer.Option(help="Octane level of fuel")] = None,
-    cetane: Annotated[int, typer.Option(help="Cetane level of fuel")] = None,
-):
-    """
-    Add fuel types to the database, One of octane_level or cetane_level must be provided.
-    """
-
-    # Validate one of octane_level or cetane_level is provided
-    if octane is None and cetane is None:
-        raise typer.BadParameter(
-            "Either octane_level or cetane_level must be provided."
-        )
-
-    with sqlite3.connect(get_db_location()) as conn:
-        cursor = conn.cursor()
-        query = "INSERT INTO fuel_types (id, name, octane_level, cetane_level) VALUES (?, ?, ?, ?)"
-
-        cursor.execute(
-            query,
-            (
-                str(uuid4()),
-                name,
-                octane,
-                cetane,
-            ),
-        ),
-        conn.commit()
-        typer.echo(f"Added fuel type {name} to the database.")
-
-
 if __name__ == "__main__":
     app()
