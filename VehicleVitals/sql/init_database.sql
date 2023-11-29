@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS "logs" (
 -- vehicles table
 CREATE TABLE IF NOT EXISTS "vehicles" (
     "id"        TEXT NOT NULL,
-    "name"      TEXT,
+    "name"      TEXT UNIQUE NOT NULL,
     "Year"      INTEGER NOT NULL,
     "Make"      TEXT NOT NULL,
     "Model"     TEXT NOT NULL,
@@ -52,7 +52,7 @@ CREATE TABLE IF NOT EXISTS "vehicles" (
 -- parts table
 CREATE TABLE IF NOT EXISTS "parts" (
     "id"            TEXT NOT NULL,
-    "name"          TEXT,
+    "name"          TEXT UNIQUE NOT NULL,
     "description"   TEXT,
     "cost"          REAL,
     PRIMARY KEY("id")
@@ -61,7 +61,7 @@ CREATE TABLE IF NOT EXISTS "parts" (
 -- service_types table
 CREATE TABLE IF NOT EXISTS "service_types" (
     "id"            TEXT NOT NULL,
-    "name"          TEXT,
+    "name"          TEXT UNIQUE NOT NULL,
     "description"   TEXT,
     "interval_days" INTEGER,
     "interval_miles" INTEGER,
@@ -80,7 +80,7 @@ CREATE TABLE IF NOT EXISTS "service_type_parts" (
 -- Fuel types table
 CREATE TABLE IF NOT EXISTS "fuel_types" (
     "id"            TEXT NOT NULL,
-    "name"          TEXT NOT NULL,
+    "name"          TEXT UNIQUE NOT NULL,
     "octane_level"  INTEGER,
     "cetane_level"  INTEGER,
     PRIMARY KEY("id")
