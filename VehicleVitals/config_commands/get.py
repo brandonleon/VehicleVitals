@@ -2,7 +2,6 @@
 Commands to get config values from the database.
 """
 import sqlite3
-from typing import Annotated
 
 import typer
 from rich.console import Console
@@ -14,26 +13,20 @@ app = typer.Typer()
 
 
 @app.command()
-def fuel_types(
-    name: Annotated[str, typer.Option(help="Name of fuel type")] = None,
-    octane_level: Annotated[int, typer.Option(help="Octane level")] = None,
-    cetane_level: Annotated[int, typer.Option(help="Cetane level")] = None,
-):
+def fuel_types():
     """
     Returns a list of fuel types fetched from the database.
     """
-
-    # If no parameters are passed in, return all fuel types
     with sqlite3.connect(get_db_location()) as conn:
         console = Console()
         cursor = conn.cursor()
         query = "SELECT name, octane_level, cetane_level FROM fuel_types"
         cursor.execute(query)
-        fuel_types = cursor.fetchall()
+        types = cursor.fetchall()
 
         table = Table("Fuel Type", "Octane/Cetane")
 
-    for fuel_type in fuel_types:
+    for fuel_type in types:
         table.add_row(
             f"{fuel_type[0]}",
             f"{fuel_type[1] if fuel_type[1] is not None else ''}"
@@ -41,3 +34,30 @@ def fuel_types(
         )
 
     console.print(table)
+
+
+@app.command()
+def service_types():
+    """
+    Returns a list of service types fetched from the database.
+    """
+    with sqlite3.connect(get_db_location()) as conn:
+        console = Console()
+        cursor = conn.cursor()
+        query = (
+            "SELECT name, description, interval_days, interval_miles FROM service_types"
+        )
+        cursor.execute(query)
+        types = cursor.fetchall()
+
+        table = Table("Name", "Description", "Interval (Days)", "Interval (Miles)")
+
+        for service_type in types:
+            table.add_row(
+                f"{service_type[0]}",
+                f"{service_type[1]}",
+                f"{service_type[2]}",
+                f"{service_type[3]}",
+            )
+
+        console.print(table)
