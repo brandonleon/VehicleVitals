@@ -7,9 +7,9 @@ from typing import Annotated
 import typer
 
 from .database_utilities import get_db_location
-from .config_commands import get
+from .config_commands import read
 
 # Create the Typer app
 app = typer.Typer()
 
-app.add_typer(get.app, name="get", help="Display fuel types.")
+app.add_typer(read.app, name="read", help="Display fuel types.")
