@@ -84,7 +84,7 @@ def logs(
                 )
             console.print(table)
         else:
-            typer.echo("No logs found on this page.")
+            typer.echo("No logs found.")
 
 
 @app.command()
@@ -150,7 +150,7 @@ def vehicles(
 
             console.print(table)
         else:
-            typer.echo("No vehicles found on this page.")
+            typer.echo("No vehicles found.")
 
 
 if __name__ == "__main__":

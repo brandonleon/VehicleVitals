@@ -70,51 +70,99 @@ def fuel_type(
 
 
 @app.command()
-def fuel_type(
-    name: Annotated[str, typer.Option(help="Name of the fuel type")],
-    octane: Annotated[int, typer.Option(help="Octane level of the fuel type")] = None,
-    cetane: Annotated[int, typer.Option(help="Cetane level of the fuel type")] = None,
+def service_type(
+    service: Annotated[str, typer.Option(help="Name of the service type")],
+    interval_days: Annotated[
+        int, typer.Option(help="Interval in days of the service type")
+    ],
+    interval_miles: Annotated[
+        int, typer.Option(help="Interval in miles of the service type")
+    ],
+    description: Annotated[
+        str, typer.Option(help="Description of the service type")
+    ] = None,
 ):
     """
-    Add a new fuel type to the database.
+    Update a service type in the database.
     """
-
-    # Validate one of either octane_level or cetane_level provided
-    if octane is None and cetane is None:
-        raise typer.BadParameter(
-            "Either octane_level or cetane_level must be provided."
-        )
-
     with sqlite3.connect(get_db_location()) as conn:
         cursor = conn.cursor()
-        query = f"INSERT INTO fuel_types (id, name, octane_level, cetane_level) VALUES ('{str(uuid4())}', ?, ?, ?)"
-        params = [name, octane, cetane]
+
+        set_clause = [
+            f"{field} = ?"
+            for field, value in [
+                ("description", description),
+                ("interval_days", interval_days),
+                ("interval_miles", interval_miles),
+            ]
+            if value is not None
+        ]
+        # Join the SET clause into a comma-separated string
+        set_clause = ", ".join(set_clause)
+
+        # Prepare the SQL query with parameterized query
+        query = f"UPDATE service_types SET {set_clause} WHERE id = OR name = ?"
+
+        params = [
+            field
+            for field in [
+                description,
+                interval_days,
+                interval_miles,
+            ]
+            if field is not None
+        ]
+
+        params += [service, service]
+
         try:
             cursor.execute(query, params)
             conn.commit()
         except sqlite3.IntegrityError as e:
-            raise typer.BadParameter(f"Fuel type {name} already exists.") from e
+            raise typer.BadParameter(f"Service type {service} does not exist.") from e
 
-    typer.echo(f"Added fuel type {name} to the database.")
+    typer.echo(f"Updated service type {service} in the database.")
 
 
 @app.command()
 def part(
-    name: Annotated[str, typer.Option(help="Name of the part")],
+    part: Annotated[str, typer.Option(help="Name of the part")],
     cost: Annotated[float, typer.Option(help="Cost of the part")],
     description: Annotated[str, typer.Option(help="Description of the part")] = None,
 ):
     """
-    Create a new part in the database.
+    Add a new part to the database.
     """
     with sqlite3.connect(get_db_location()) as conn:
         cursor = conn.cursor()
-        query = f"INSERT INTO parts (id, name, description, cost) VALUES ('{str(uuid4())}', ?, ?, ?)"
-        params = [name, description, cost]
+
+        set_clause = [
+            f"{field} = ?"
+            for field, value in [
+                ("description", description),
+                ("cost", cost),
+            ]
+            if value is not None
+        ]
+        # Join the SET clause into a comma-separated string
+        set_clause = ", ".join(set_clause)
+
+        # Prepare the SQL query with parameterized query
+        query = f"UPDATE parts SET {set_clause} WHERE id = ? OR name = ?"
+
+        params = [
+            field
+            for field in [
+                description,
+                cost,
+            ]
+            if field is not None
+        ]
+
+        params += [part, part]
+
         try:
             cursor.execute(query, params)
             conn.commit()
         except sqlite3.IntegrityError as e:
-            raise typer.BadParameter(f"Part {name} already exists.") from e
-
-    typer.echo(f"Added part {name} to the database.")
+            raise typer.BadParameter(f"Service type {part} does not exist.") from e
