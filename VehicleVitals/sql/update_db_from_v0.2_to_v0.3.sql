@@ -49,29 +49,12 @@ CREATE TABLE IF NOT EXISTS "parts_temp" (
     PRIMARY KEY("id")
 );
 
--- vehicles table
-CREATE TABLE IF NOT EXISTS "vehicles_temp" (
-    "id"        TEXT NOT NULL,
-    "name"      TEXT UNIQUE NOT NULL,
-    "Year"      INTEGER NOT NULL,
-    "Make"      TEXT NOT NULL,
-    "Model"     TEXT NOT NULL,
-    "trim"      TEXT,
-    "Engine"    TEXT,
-    "Color"     TEXT NOT NULL,
-    "mileage"   REAL NOT NULL DEFAULT 0,
-    PRIMARY KEY("id")
-);
-
 -- Copy data from the original table to the temporary table
 INSERT INTO "service_types_temp" SELECT * FROM "service_types";
 INSERT INTO "parts_temp" SELECT * FROM "parts";
-INSERT INTO "vehicles_temp" SELECT * FROM "vehicles";
 
 -- Drop the original table and rename the temporary table to the original table name
 DROP TABLE IF EXISTS "service_types";
 DROP TABLE IF EXISTS "parts";
-DROP TABLE IF EXISTS "vehicles";
 ALTER TABLE "service_types_temp" RENAME TO "service_types";
 ALTER TABLE "parts_temp" RENAME TO "parts";
-ALTER TABLE "vehicles_temp" RENAME TO "vehicles";

@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS "logs" (
 -- vehicles table
 CREATE TABLE IF NOT EXISTS "vehicles" (
     "id"        TEXT NOT NULL,
-    "name"      TEXT UNIQUE NOT NULL,
+    "name"      TEXT,
     "Year"      INTEGER NOT NULL,
     "Make"      TEXT NOT NULL,
     "Model"     TEXT NOT NULL,

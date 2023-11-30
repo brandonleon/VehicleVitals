@@ -232,26 +232,21 @@ def vehicle(
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         """
 
-        try:
-            cursor.execute(
-                query,
-                (
-                    str(uuid4()),
-                    name,
-                    year,
-                    make,
-                    model,
-                    mileage,
-                    trim,
-                    engine,
-                    color,
-                ),
+        cursor.execute(
+            query,
+            (
+                str(uuid4()),
+                name,
+                year,
+                make,
+                model,
+                mileage,
+                trim,
+                engine,
+                color,
             ),
-            conn.commit()
-        except sqlite3.IntegrityError as e:
-            raise typer.BadParameter(
-                f"Vehicle {year} {make} {model} already exists."
-            ) from e
+        ),
+        conn.commit()
         typer.echo(f"Added vehicle {year} {make} {model}, to the database.")
 
 
