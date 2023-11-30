@@ -94,6 +94,7 @@ def vehicles(
     vehicle: Annotated[
         str, typer.Option(help="Filter by Vehicle ID or Name (All if blank).")
     ] = "",
+    show_id: Annotated[bool, typer.Option(help="Show the vehicle ID")] = False,
 ):
     """
     View vehicles with optional filtering and pagination.
@@ -108,9 +109,13 @@ def vehicles(
     """
     with sqlite3.connect(get_db_location()) as conn:
         cursor = conn.cursor()
+        conn.row_factory = sqlite3.Row
 
         # Calculate the OFFSET based on the page number and page size
-        query = "SELECT id, name, Year, Make, Model, trim, mileage FROM vehicles"
+        if show_id:
+            query = "SELECT id, name, Year, Make, Model, trim, mileage FROM vehicles"
+        else:
+            query = "SELECT name, Year, Make, Model, trim, mileage FROM vehicles"
         params = ()
         if vehicle:
             query += " WHERE name = ? or id = ?"
@@ -123,15 +128,25 @@ def vehicles(
         if vehicle_entries := cursor.fetchall():
             typer.echo(f"Page {page} of {len(vehicle_entries) // page_size + 1}:")
             console = Console()
-            table = Table("ID", "Name", "Vehicle Description", "Mileage")
+            if show_id:
+                table = Table("ID", "Name", "Vehicle Description", "Mileage")
+            else:
+                table = Table("Name", "Vehicle Description", "Mileage")
             for vehicle in vehicle_entries:
                 v = [str(x) for x in vehicle]
-                table.add_row(
-                    v[0],
-                    v[1] if v[1] != "None" else "",
-                    f"{v[2]} {v[3]} {v[4]} {v[5]}",
-                    f"{float(str(v[6]).replace(',', '')):,.1f}",
-                )
+                if show_id:
+                    table.add_row(
+                        v[0],
+                        v[1],
+                        f"{v[2]} {v[3]} {v[4]} {v[5]}",
+                        f"{float(str(v[6]).replace(',', '')):,.1f}",
+                    )
+                else:
+                    table.add_row(
+                        v[0],
+                        f"{v[1]} {v[2]} {v[3]} {v[4]}",
+                        f"{float(str(v[5]).replace(',', '')):,.1f}",
+                    )
 
             console.print(table)
         else:

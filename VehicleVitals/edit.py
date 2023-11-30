@@ -2,6 +2,7 @@
 This module contains the functions to edit entries in the database.
 """
 import sqlite3
+import uuid
 from typing import Annotated
 
 import typer
@@ -10,6 +11,17 @@ from .database_utilities import get_db_location
 
 # Create the Typer app
 app = typer.Typer()
+
+
+def is_valid_uuid(input_string):
+    try:
+        # Try to create a UUID object from the input string
+        uuid_obj = uuid.UUID(input_string)
+        # If successful, it's a valid UUID
+        return True
+    except ValueError:
+        # If ValueError is raised, it's not a valid UUID
+        return False
 
 
 @app.command()
@@ -29,6 +41,18 @@ def vehicle(
     Edit a vehicle record in the database, based on the vehicle ID or name.
     Only values that are passed in will be updated.
     """
+    # Validate multiple vehicles do not have the same name
+    if not is_valid_uuid(vehicle):
+        with sqlite3.connect(get_db_location()) as conn:
+            cursor = conn.cursor()
+            query = "SELECT count(*) FROM vehicles WHERE name = ?"
+            cursor.execute(query, (vehicle,))
+            if cursor.fetchone()[0] > 1:
+                raise typer.BadParameter(
+                    f"Multiple vehicles have the name {vehicle}. Please use the ID instead. \n"
+                    "To view a list of vehicles, run `vv display vehicles --show-id`."
+                )
+
     with sqlite3.connect(get_db_location()) as conn:
         cursor = conn.cursor()
 
