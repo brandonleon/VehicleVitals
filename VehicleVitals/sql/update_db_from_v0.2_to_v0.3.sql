@@ -49,9 +49,18 @@ CREATE TABLE IF NOT EXISTS "parts_temp" (
     PRIMARY KEY("id")
 );
 
+-- part cost history table
+CREATE TABLE IF NOT EXISTS "part_history" (
+    "id"            TEXT NOT NULL,
+    "part_id"       TEXT,
+    "datetime"      DATETIME DEFAULT CURRENT_TIMESTAMP,
+    "cost"          REAL,
+    FOREIGN KEY ("part_id") REFERENCES "parts" ("id")
+);
+
 -- Copy data from the original table to the temporary table
-INSERT INTO "service_types_temp" SELECT * FROM "service_types";
-INSERT INTO "parts_temp" SELECT * FROM "parts";
+INSERT OR IGNORE INTO "service_types_temp" SELECT * FROM "service_types";
+INSERT OR IGNORE INTO "parts_temp" SELECT * FROM "parts";
 
 -- Drop the original table and rename the temporary table to the original table name
 DROP TABLE IF EXISTS "service_types";

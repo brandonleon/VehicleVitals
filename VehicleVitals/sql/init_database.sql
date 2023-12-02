@@ -58,6 +58,16 @@ CREATE TABLE IF NOT EXISTS "parts" (
     PRIMARY KEY("id")
 );
 
+-- part cost history table
+CREATE TABLE IF NOT EXISTS "part_history" (
+    "id"            TEXT NOT NULL,
+    "part_id"       TEXT,
+    "datetime"      DATETIME DEFAULT CURRENT_TIMESTAMP,
+    "cost"          REAL,
+    FOREIGN KEY ("part_id") REFERENCES "parts" ("id")
+);
+
+
 -- service_types table
 CREATE TABLE IF NOT EXISTS "service_types" (
     "id"            TEXT NOT NULL,
