@@ -2,9 +2,11 @@
 This module contains the functions to read from the database.
 """
 import sqlite3
+import sys
 from typing import Annotated
 
 import typer
+import json
 from rich.console import Console
 from rich.table import Table
 
@@ -21,6 +23,7 @@ def logs(
     vehicle_id: Annotated[
         str, typer.Option(help="Filter by Vehicle ID (All if blank).")
     ] = "",
+    json_output: Annotated[bool, typer.Option(help="Output as JSON")] = False,
 ):
     """
     View logs with optional filtering and pagination.
@@ -57,6 +60,23 @@ def logs(
 
         cursor.execute(query, params)
         if log_entries := cursor.fetchall():
+            if json_output:
+                column_names = [
+                    "Year",
+                    "Make",
+                    "Model",
+                    "trim",
+                    "EntryDate",
+                    "EntryTime",
+                    "OdometerReading",
+                    "MPG",
+                    "EntryType",
+                    "Service",
+                ]
+                typer.echo(
+                    json.dumps([dict(zip(column_names, row)) for row in log_entries])
+                )
+                sys.exit(0)
             print(f"Page {page}:")
             console = Console()
             table = Table(
@@ -95,6 +115,7 @@ def vehicles(
         str, typer.Option(help="Filter by Vehicle ID or Name (All if blank).")
     ] = "",
     show_id: Annotated[bool, typer.Option(help="Show the vehicle ID")] = False,
+    json_output: Annotated[bool, typer.Option(help="Output as JSON")] = False,
 ):
     """
     View vehicles with optional filtering and pagination.
@@ -126,6 +147,22 @@ def vehicles(
 
         cursor.execute(query, params)
         if vehicle_entries := cursor.fetchall():
+            if json_output:
+                column_names = [
+                    "id",
+                    "name",
+                    "Year",
+                    "Make",
+                    "Model",
+                    "trim",
+                    "mileage",
+                ]
+                typer.echo(
+                    json.dumps(
+                        [dict(zip(column_names, row)) for row in vehicle_entries]
+                    )
+                )
+                sys.exit(0)
             typer.echo(f"Page {page} of {len(vehicle_entries) // page_size + 1}:")
             console = Console()
             if show_id:
